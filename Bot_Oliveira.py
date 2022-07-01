@@ -30,7 +30,7 @@ async def on_message(message):
         
     await bot.process_commands(message) 
     
-#Bot da cargos a partir da reação que o usuario coloca na memsagem
+#Bot charges from the reaction the user puts on the message
 @bot.event
 async def on_reaction_add(reaction, user): 
     if reaction.emoji == "✅":
@@ -40,7 +40,7 @@ async def on_reaction_add(reaction, user):
         role = user.guild.get_role(976504255944994946)
         await user.add_roles(role)
 
-#Aviso caso o usuario escreva algum comando errado              
+#Warning if the user writes a wrong command              
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, MissingRequiredArgument):
@@ -51,7 +51,7 @@ async def on_command_error(ctx, error):
         raise error    
 
 
-#Diz "Olá" e cita o usuario que usar o comando: !ajuda
+#Say "Hello" and quote the user who uses the command: !help
 @bot.command(name="ajuda", help="Ajuda o usuario a achar as informações sobre o servidor (Não requer argumentos)")
 async def send_hello(ctx):
     name = ctx.author.name
@@ -60,7 +60,7 @@ async def send_hello(ctx):
     
     await ctx.send(response)
     
-#a calculadora é usada com o comando: !calc
+#The calculator is used with the command: !calc
 @bot.command(name="calc", help="Calcula uma expressão.Argumentos:Expressão")
 async def calculate_expression(ctx, *expression):
     expression = "".join(expression)
@@ -68,7 +68,7 @@ async def calculate_expression(ctx, *expression):
     
     await ctx.send("A resposta é: " + str(response))
 
-#Calcula cripto moedas usando a API da biance com o comando: !binance   
+#Calculate cryptocurrencies using biance API with command: !binance  
 @bot.command(help="Verifica o valor  de um par na Binance. Argumentos:Moeda, Base")
 async def binance(ctx, coin, base):
     try:
@@ -87,17 +87,17 @@ async def binance(ctx, coin, base):
         await ctx.send("Ops...Deu algum erro")
         print(error)
         
-#Envia mensagem no privado do usuario que usar o comando: !segredo        
+#Send a private message to the user who uses the command: !segredo        
 @bot.command(name="segredo", help="envia uma foto no privado (Não requer argumentos)")
 async def secret(ctx):
     try:
         await ctx.author.send("Fico feliz que chegou até aqui!se não se importar ajude o criador deste bot seguindo-o no instagram @xande.code")
         
-    #Caso ele não tenha habilitado o bot dara as instruções para que o usuario possa receber a mensagem
+    #If he has not enabled the bot, he will give instructions so that the user can receive the message
     except discord.errors.Forbidden:
         await ctx.send("Desculpe,não posso te contar um segredo,habilite Permitir mensagens diretas de membros do servidor (Opções > Privacidade e Segurança) ")
 
-
+#Send a random photo using the lorem picsum API using the command: !foto
 @bot.command(name="foto", help="Envia uma foto aleatória no chat (Não requer argumentos)")
 async def get_random_image(ctx):
     url_image = "https://picsum.photos/1920/1080"
@@ -121,7 +121,7 @@ async def get_random_image(ctx):
     
     await ctx.send(embed=embed)
   
-#Mostra O Dia/Mês/Ano e o Horario no chat Geral
+#Shows Day/Month/Year and Time in General chat
 @tasks.loop(hours=24)
 async def current_time():
     now = datetime.now()   
@@ -132,6 +132,7 @@ async def current_time():
     
     await channel.send("Data atual: " + now)
     
+#Token for bot activation
 TOKEN = config("TOKEN")   
 bot.run(TOKEN)
 
