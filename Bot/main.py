@@ -1,5 +1,4 @@
 from datetime import datetime
-from turtle import title
 import re
 
 from decouple import config
@@ -7,12 +6,10 @@ import requests
 
 import discord
 from discord.ext import commands
-from discord import app_commands
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MissingRequiredArgument, CommandNotFound 
 
 import yt_dlp
-import asyncio
 
 
 intents = discord.Intents.default()
