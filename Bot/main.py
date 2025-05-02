@@ -210,4 +210,3 @@ async def current_time():
 #Token for bot activation
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
-
