@@ -3,6 +3,8 @@ import re
 
 from decouple import config
 import requests
+from discord_token import *
+
 
 import discord
 from discord.ext import commands
@@ -198,6 +200,6 @@ async def current_time():
     await channel.send(f"**Bot Oliveira bateu seu ponto: {now}**")
     
 #Token for bot activation
-TOKEN = config("TOKEN")   
+TOKEN = TOKEN   
 bot.run(TOKEN)
 
