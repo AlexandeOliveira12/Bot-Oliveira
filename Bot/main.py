@@ -3,8 +3,6 @@ import re
 
 from decouple import config
 import requests
-from discord_token import *
-
 
 import discord
 from discord.ext import commands
@@ -66,7 +64,11 @@ async def on_command_error(ctx, error):
     elif isinstance(error, CommandNotFound): 
         await ctx.send("Por favor, escreva o comando corretamente, digite !help para ver os comandos e suas funcionalidades!")    
     else:
-        raise error    
+        raise error   
+
+@bot.command(help="Testa se o bot está online")
+async def ping(ctx):
+    await ctx.send("🏓 Pong!") 
 
 @bot.command(name="help", help="Mostra todos os comandos disponíveis")
 async def custom_help(ctx):
@@ -172,7 +174,12 @@ async def tocar(ctx, *, url):
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=False)
+        try:
+            info = ydl.extract_info(url, download=False)
+        except Exception:
+            await ctx.send("❌ Não foi possível encontrar a música. Verifique o link.")
+            return
+
         url_audio = info['url']
         titulo = info.get('title', 'Sem título')
 
@@ -189,6 +196,7 @@ async def tocar(ctx, *, url):
 
     await ctx.send(f"🎶 Tocando agora: **{titulo}**")
 
+
 @tasks.loop(hours=24)
 async def current_time():
     now = datetime.now()   
@@ -200,6 +208,6 @@ async def current_time():
     await channel.send(f"**Bot Oliveira bateu seu ponto: {now}**")
     
 #Token for bot activation
-TOKEN = TOKEN   
+TOKEN = config("TOKEN")
 bot.run(TOKEN)
 
