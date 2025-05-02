@@ -88,12 +88,13 @@ async def send_hello(ctx):
     await ctx.send(response)
     
 #!calc
-@bot.command(name="calc", help="Calcula uma expressão.Argumentos:Expressão")
-async def calculate_expression(ctx, *expression):
-    expression = "".join(expression)
-    response = eval(expression)
-    
-    await ctx.send("A resposta é: " + str(response))
+@bot.command(name="calc", help="Calcula uma expressão matemática. Ex: !calc 2+2")
+async def calculate_expression(ctx, *, expression):
+    try:
+        result = ne.evaluate(expression)
+        await ctx.send(f"A resposta é: {result}")
+    except Exception:
+        await ctx.send("⚠️ Expressão inválida. Tente novamente.")
 
 #Cota diferentes preços de Moedas
 @bot.command(name="preco", help="Consulta o valor de uma moeda em relação a outra. Ex: !preco BTC BRL")
@@ -195,7 +196,6 @@ async def tocar(ctx, *, url):
     ctx.voice_client.play(source)
 
     await ctx.send(f"🎶 Tocando agora: **{titulo}**")
-
 
 @tasks.loop(hours=24)
 async def current_time():
