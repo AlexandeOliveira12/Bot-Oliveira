@@ -1,42 +1,55 @@
 from datetime import datetime
 from turtle import title
-import certifi
+import re
 
-import requests
-import discord
 from decouple import config
+import requests
 
+import discord
+from discord.ext import commands
+from discord import app_commands
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MissingRequiredArgument, CommandNotFound 
-from keep_alive import keep_alive
 
-keep_alive()
+import yt_dlp
+import asyncio
+
 
 intents = discord.Intents.default()
 intents.message_content = True  # Necessário para ler mensagens
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-#Displays in the Terminal that the Bot is Online
-@bot.event
-async def on_ready():
-    print(f"Estou pronto! Estou conectado como {bot.user}")
-    current_time.start() 
+palavras_regex = re.compile(r"\b(merda|porra|caralho|bct|prr|krlh|puta|puto|fdp|filho da puta|desgraçado|bosta|vagabundo|vagabunda|arrombado|cuzão|cuzinha|buceta|babaca|otário|otaria|escroto|escrota|viado|veado|boiola|piranha|cacete|rola|pau no cu|pau|corno|corna|retardado|mongol|jumento|anta|imbecil|idiota|burro|burra)\b", re.IGNORECASE)
 
-#Warns and deletes messages that contain the following words: "Palavrão"
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
-    
-    if "palavrão" in message.content:
-        await message.channel.send(f"Por favor, {message.author.name}, não ofenda os demais úsuarios!")
-        
+
+    if palavras_regex.search(message.content):
+        await message.channel.send(f"{message.author.mention}, evite linguagem ofensiva.")
         await message.delete()
-        
-    await bot.process_commands(message) 
+
+    await bot.process_commands(message)
+
+@bot.event
+async def on_ready():
+    print(f"Estou pronto! Estou conectado como {bot.user}")
     
-#Bot charges from the reaction the user puts on the message
+    canal = bot.get_channel(1367650512492695572)
+    if canal:
+        embed = discord.Embed(
+            title="🤖 Bot Oliveira Online!",
+            description="O bot foi iniciado com sucesso e está pronto para uso!",
+            color=0x00ff00  # Verde
+        )
+        embed.set_thumbnail(url=bot.user.display_avatar.url)
+        embed.set_footer(text="Status atualizado automaticamente.")
+        await canal.send(embed=embed)
+
+    current_time.start()
+
 @bot.event
 async def on_reaction_add(reaction, user): 
     if reaction.emoji == "✅":
@@ -56,9 +69,15 @@ async def on_command_error(ctx, error):
     else:
         raise error    
 
+@bot.command(name="help", help="Mostra todos os comandos disponíveis")
+async def custom_help(ctx):
+    embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
+    for command in bot.commands:
+        embed.add_field(name=f"!{command.name}", value=command.help, inline=False)
+    await ctx.send(embed=embed)
 
 #!ajudaMusic
-@bot.command(name="ajudaMusic", help=" Ajuda o usuario a achar os canais de musica (Não requer argumentos)")
+@bot.command(name="ajudaMusic", help=" Ajuda o usuario a achar os canais de musica")
 async def send_hello(ctx):
     user_id = ctx.author.id
     canal = bot.get_channel(1196590744002109482)
@@ -101,7 +120,7 @@ async def cotar_moeda(ctx, moeda: str, base: str):
         print(e)
 
 # Envia uma foto aleatória no chat com dimensão de 1920x1080 usando o comando: !foto
-@bot.command(name="foto", help="Envia uma foto aleatória no chat (Não requer argumentos)")
+@bot.command(name="foto", help="Envia uma foto aleatória no chat")
 async def get_random_image(ctx):
     url_image = "https://picsum.photos/1920/1080"
     
@@ -124,6 +143,52 @@ async def get_random_image(ctx):
     embed.set_image(url=url_image)
     
     await ctx.send(embed=embed)
+
+@bot.command(help="Para que o Bot possa entrar no canal de musica")
+async def entrar(ctx):
+    if ctx.author.voice:
+        canal = ctx.author.voice.channel
+        await canal.connect()
+        await ctx.send("Entrei no canal de voz!")
+    else:
+        await ctx.send("Você precisa estar em um canal de voz.")
+
+@bot.command(help="Para que o Bot possa sair do canal de musica")
+async def sair(ctx):
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+        await ctx.send("Saí do canal de voz.")
+    else:
+        await ctx.send("Não estou em nenhum canal de voz.")
+
+@bot.command(help="Para adicionar uma musica ao canal, digite '!tocar link_da_musica' ")
+async def tocar(ctx, *, url):
+    await ctx.send("🔍 Buscando a música...")
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'quiet': True,
+        'noplaylist': True,
+        'default_search': 'auto',
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        url_audio = info['url']
+        titulo = info.get('title', 'Sem título')
+
+    if not ctx.voice_client:
+        if ctx.author.voice:
+            await ctx.author.voice.channel.connect()
+        else:
+            await ctx.send("Você precisa estar em um canal de voz!")
+            return
+
+    ctx.voice_client.stop()
+    source = await discord.FFmpegOpusAudio.from_probe(url_audio, method='fallback')
+    ctx.voice_client.play(source)
+
+    await ctx.send(f"🎶 Tocando agora: **{titulo}**")
 
 @tasks.loop(hours=24)
 async def current_time():
