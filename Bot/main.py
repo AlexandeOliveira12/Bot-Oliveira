@@ -122,7 +122,7 @@ async def calculate_timeplayed(ctx, STEAM_ID: str):
                 top10 = ranking[:10]
 
                 embed = discord.Embed(
-                    title=f"🎮 <@{user_id}> Esses são seus jogos mais jogados!! 🎮",
+                    title=f"🎮 {ctx.author.mention} Esses são seus jogos mais jogados!! 🎮",
                     description="Aqui estão os jogos com o maior tempo de jogo.",
                     color=0x00FF00
                 )
