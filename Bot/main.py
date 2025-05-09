@@ -87,15 +87,6 @@ async def send_hello(ctx):
     
     await ctx.send(response)
     
-#!calc
-@bot.command(name="calc", help="Calcula uma expressão matemática. Ex: !calc 2+2")
-async def calculate_expression(ctx, *, expression):
-    try:
-        result = ne.evaluate(expression)
-        await ctx.send(f"A resposta é: {result}")
-    except Exception:
-        await ctx.send("⚠️ Expressão inválida. Tente novamente.")
-    
 @bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
 async def calculate_timeplayed(ctx, STEAM_ID: str):
     try:
@@ -131,7 +122,7 @@ async def calculate_timeplayed(ctx, STEAM_ID: str):
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title="🎮 Seus jogos mais jogado!! 🎮",
+                title="🎮 Seus jogos mais jogados!! 🎮",
                 description="",
                 color=0x00FF00
             )
@@ -169,31 +160,6 @@ async def cotar_moeda(ctx, moeda: str, base: str):
     except Exception as e:
         await ctx.send("⚠️ Ocorreu um erro ao buscar o preço.")
         print(e)
-
-# Envia uma foto aleatória no chat com dimensão de 1920x1080 usando o comando: !foto
-@bot.command(name="foto", help="Envia uma foto aleatória no chat")
-async def get_random_image(ctx):
-    url_image = "https://picsum.photos/1920/1080"
-    
-    embed = discord.Embed(
-        title = "Resultado da busca de imagem",
-        description = "Ps: A busca será totalmente aleátoria",
-        color = 0x0000FF,
-    )
-
-    largura = "1920"
-    altura = "1080"
-
-    embed.set_author(name=bot.user.name, icon_url=bot.user.display_avatar.url)
-    
-    embed.set_footer(text="Feito por " + bot.user.name, icon_url=bot.user.display_avatar.url)
-    
-    embed.add_field(name="API", value="API utilizada: https://picsum.photos/")
-    embed.add_field(name="Parâmetros", value=f"{largura} x {altura}")
-    
-    embed.set_image(url=url_image)
-    
-    await ctx.send(embed=embed)
 
 @bot.command(help="Para que o Bot possa entrar no canal de musica")
 async def entrar(ctx):
