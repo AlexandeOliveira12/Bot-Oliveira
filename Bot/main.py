@@ -90,6 +90,7 @@ async def send_hello(ctx):
 async def calculate_timeplayed(ctx, STEAM_ID: str):
     try:
         API_KEY = config("API_KEY")
+        user_id = ctx.author.id
 
         url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
         params = {
@@ -121,7 +122,7 @@ async def calculate_timeplayed(ctx, STEAM_ID: str):
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title="🎮 Seus jogos mais jogados!! 🎮",
+                title=f"🎮 <@{user_id}> Esse são seus jogos mais jogados!! 🎮",
                 description="",
                 color=0x00FF00
             )
