@@ -155,8 +155,6 @@ async def cotar_moeda(ctx, moeda: str, base: str):
         await ctx.send("⚠️ Ocorreu um erro ao buscar o preço.")
         print(e)
 
-@bot.command(name="", help="")
-
 @bot.command(help="Para que o Bot possa entrar no canal de musica")
 async def entrar(ctx):
     if ctx.author.voice:
