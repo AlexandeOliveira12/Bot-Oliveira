@@ -75,16 +75,6 @@ async def custom_help(ctx):
     for command in bot.commands:
         embed.add_field(name=f"!{command.name}", value=command.help, inline=False)
     await ctx.send(embed=embed)
-
-#!ajudaMusic
-@bot.command(name="ajudaMusic", help=" Ajuda o usuario a achar os canais de musica")
-async def send_hello(ctx):
-    user_id = ctx.author.id
-    canal = bot.get_channel(1196590744002109482)
-
-    response = f"Ola, <@{user_id}> quer colocar uma musica? você pode coloca-la no canal {canal.mention}"
-    
-    await ctx.send(response)
     
 @bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
 async def calculate_timeplayed(ctx, STEAM_ID: str):
@@ -140,7 +130,7 @@ async def calculate_timeplayed(ctx, STEAM_ID: str):
         except Exception as e:
             await ctx.send(f"⚠️ Erro ao buscas dados: {e}")
 
-#Cota diferentes preços de Moedas
+# Cotar moedas
 @bot.command(name="preco", help="Consulta o valor de uma moeda em relação a outra. Ex: !preco BTC BRL")
 async def cotar_moeda(ctx, moeda: str, base: str):
     try:
@@ -164,6 +154,8 @@ async def cotar_moeda(ctx, moeda: str, base: str):
     except Exception as e:
         await ctx.send("⚠️ Ocorreu um erro ao buscar o preço.")
         print(e)
+
+@bot.command(name="", help="")
 
 @bot.command(help="Para que o Bot possa entrar no canal de musica")
 async def entrar(ctx):
