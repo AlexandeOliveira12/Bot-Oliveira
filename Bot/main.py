@@ -65,9 +65,9 @@ async def on_command_error(ctx, error):
     else:
         raise error   
 
-@bot.command(help="Testa se o bot está online")
-async def ping(ctx):
-    await ctx.send("🏓 Pong!") 
+@bot.command(name="QAP", help="Testa se o bot está online")
+async def QAP(ctx):
+    await ctx.send("QAP Comando, Prossiga!!") 
 
 @bot.command(name="help", help="Mostra todos os comandos disponíveis")
 async def custom_help(ctx):
