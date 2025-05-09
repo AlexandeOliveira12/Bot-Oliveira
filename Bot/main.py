@@ -55,8 +55,7 @@ async def on_reaction_add(reaction, user):
     elif reaction.emoji == "👨‍💻":
         role = user.guild.get_role(976504255944994946)
         await user.add_roles(role)
-
-#Warning if the user writes a wrong command              
+             
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, MissingRequiredArgument):
@@ -221,7 +220,5 @@ async def current_time():
     channel = bot.get_channel(1367650512492695572)
     
     await channel.send(f"**Bot Oliveira bateu seu ponto: {now}**")
-    
-#Token for bot activation
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
