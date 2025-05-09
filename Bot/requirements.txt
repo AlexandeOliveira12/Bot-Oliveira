@@ -9,6 +9,7 @@ cffi==1.17.1
 charset-normalizer==3.4.1
 discord.py==2.5.2
 docopt==0.6.2
+ffmpeg
 frozenlist==1.6.0
 idna==3.10
 multidict==6.4.3
@@ -29,3 +30,4 @@ urllib3==2.4.0
 yarg==0.1.10
 yarl==1.20.0
 yt-dlp==2025.4.30
+
