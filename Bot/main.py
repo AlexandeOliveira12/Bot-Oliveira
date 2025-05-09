@@ -86,8 +86,8 @@ async def send_hello(ctx):
     
     await ctx.send(response)
     
-    @bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
-    async def calculate_timeplayed(ctx, STEAM_ID: str):
+@bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
+async def calculate_timeplayed(ctx, STEAM_ID: str):
         try:
             API_KEY = config("API_KEY")
             user_id = ctx.author.id
