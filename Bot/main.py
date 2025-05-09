@@ -86,55 +86,60 @@ async def send_hello(ctx):
     
     await ctx.send(response)
     
-@bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
-async def calculate_timeplayed(ctx, STEAM_ID: str):
-    try:
-        API_KEY = config("API_KEY")
-        user_id = ctx.author.id
+    @bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
+    async def calculate_timeplayed(ctx, STEAM_ID: str):
+        try:
+            API_KEY = config("API_KEY")
+            user_id = ctx.author.id
 
-        url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
-        params = {
-            "key": API_KEY,
-            "steamid": STEAM_ID,
-            "include_appinfo": True,
-            "include_played_free_games": True
-        }
+            url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
+            params = {
+                "key": API_KEY,
+                "steamid": STEAM_ID,
+                "include_appinfo": True,
+                "include_played_free_games": True
+            }
 
-        response = requests.get(url, params=params)
-        data = response.json()
+            response = requests.get(url, params=params)
+            data = response.json()
 
-        # Verifica se há jogos
-        if "response" in data and "games" in data["response"]:
-            jogos = data["response"]["games"]
+            # Verifica se há jogos
+            if "response" in data and "games" in data["response"]:
+                jogos = data["response"]["games"]
 
-            # Converte minutos para horas e organiza em lista
-            ranking = [
-                {
-                    "nome": jogo["name"],
-                    "horas": round(jogo["playtime_forever"] / 60, 2)
-                }
-                for jogo in jogos
-                if jogo["playtime_forever"] > 0
-            ]
+                # Converte minutos para horas e organiza em lista
+                ranking = [
+                    {
+                        "nome": jogo["name"],
+                        "horas": round(jogo["playtime_forever"] / 60, 2)
+                    }
+                    for jogo in jogos
+                    if jogo["playtime_forever"] > 0
+                ]
 
-            # Ordena do maior para o menor tempo
-            ranking.sort(key=lambda x: x["horas"], reverse=True)
-            top10 = ranking[:10]
+                # Ordena do maior para o menor tempo
+                ranking.sort(key=lambda x: x["horas"], reverse=True)
+                top10 = ranking[:10]
 
-            embed = discord.Embed(
-                title=f"🎮 <@{user_id}> Esse são seus jogos mais jogados!! 🎮",
-                description="",
-                color=0x00FF00
-            )
+                embed = discord.Embed(
+                    title=f"🎮 <@{user_id}> Esses são seus jogos mais jogados!! 🎮",
+                    description="Aqui estão os jogos com o maior tempo de jogo.",
+                    color=0x00FF00
+                )
 
-            for i, jogo in enumerate(top10, start=1):
-                    embed.description += f"{i}. **{jogo['nome']}** – `{jogo['horas']} horas`\n"
+                # Adiciona o total de horas jogadas ao embed
+                total_hours = sum([jogo['horas'] for jogo in top10])
+                embed.add_field(name="Total de Horas Jogadas", value=f"{total_hours} horas", inline=False)
 
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("Nenhum jogo encontrado ou perfil privado.")
-    except Exception as e:
-        await ctx.send(f"⚠️ Erro ao buscas dados: {e}")
+                # Adiciona os jogos mais jogados
+                for i, jogo in enumerate(top10, start=1):
+                    embed.add_field(name=f"{i}. {jogo['nome']}", value=f"{jogo['horas']} horas", inline=True)
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Nenhum jogo encontrado ou perfil privado.")
+        except Exception as e:
+            await ctx.send(f"⚠️ Erro ao buscas dados: {e}")
 
 #Cota diferentes preços de Moedas
 @bot.command(name="preco", help="Consulta o valor de uma moeda em relação a outra. Ex: !preco BTC BRL")
