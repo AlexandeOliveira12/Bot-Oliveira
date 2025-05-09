@@ -219,12 +219,9 @@ async def tocar(ctx, *, url):
 
 @tasks.loop(hours=24)
 async def current_time():
-    now = datetime.now()   
-    
-    now = now. strftime("%d/%m/%Y ás %H:%M:%S")
     
     channel = bot.get_channel(1367650512492695572)
     
-    await channel.send(f"**Bot Oliveira bateu seu ponto: {now}**")
+    await channel.send(f"**Bot Oliveira bateu seu ponto**")
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
