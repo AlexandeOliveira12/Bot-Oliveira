@@ -1,17 +1,27 @@
-# Usa a imagem base do Python
+# Usa imagem oficial do Python
 FROM python:3.12-slim
 
-# Instalação do ffmpeg
-RUN apt-get update && apt-get install -y ffmpeg
+# Evita prompts durante a instalação
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Define o diretório de trabalho
+# Instala ffmpeg e dependências
+RUN apt-get update && \
+    apt-get install -y ffmpeg gcc libffi-dev libssl-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cria diretório para o bot
 WORKDIR /app
 
-# Copia todos os arquivos do projeto para o diretório de trabalho no container
-COPY . /app
+# Copia os arquivos do seu projeto para dentro do contêiner
+COPY . .
 
-# Instala as dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Instala as dependências do projeto
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Comando para rodar o bot
+# Expõe a porta (não obrigatório para bots do Discord, mas bom para Railway)
+EXPOSE 8080
+
+# Comando para iniciar o bot
 CMD ["python", "main.py"]

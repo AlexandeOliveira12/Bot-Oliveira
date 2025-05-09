@@ -9,7 +9,6 @@ cffi==1.17.1
 charset-normalizer==3.4.1
 discord.py==2.5.2
 docopt==0.6.2
-ffmpeg
 frozenlist==1.6.0
 idna==3.10
 multidict==6.4.3
