@@ -222,6 +222,6 @@ async def current_time():
     
     channel = bot.get_channel(1367650512492695572)
     
-    await channel.send(f"**Bot Oliveira bateu seu ponto**")
+    await channel.send("")
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
