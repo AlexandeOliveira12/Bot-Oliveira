@@ -15,7 +15,7 @@ import yt_dlp
 intents = discord.Intents.default()
 intents.message_content = True  # Necessário para ler mensagens
 
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="/", intents=intents, help_command=None)
 
 palavras_regex = re.compile(r"\b(merda|porra|caralho|bct|prr|krlh|puta|puto|fdp|filho da puta|desgraçado|bosta|vagabundo|vagabunda|arrombado|cuzão|cuzinha|buceta|babaca|otário|otaria|escroto|escrota|viado|veado|boiola|piranha|cacete|rola|pau no cu|pau|corno|corna|retardado|mongol|jumento|anta|imbecil|idiota|burro|burra)\b", re.IGNORECASE)
 
@@ -46,15 +46,6 @@ async def on_ready():
         await canal.send(embed=embed)
 
     current_time.start()
-
-@bot.event
-async def on_reaction_add(reaction, user): 
-    if reaction.emoji == "✅":
-        role = user.guild.get_role(1354546382471561249)
-        await user.add_roles(role)
-    elif reaction.emoji == "👨‍💻":
-        role = user.guild.get_role(976504255944994946)
-        await user.add_roles(role)
              
 @bot.event
 async def on_command_error(ctx, error):
@@ -73,7 +64,7 @@ async def QAP(ctx):
 async def custom_help(ctx):
     embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
     for command in bot.commands:
-        embed.add_field(name=f"!{command.name}", value=command.help, inline=False)
+        embed.add_field(name=f"/{command.name}", value=command.help, inline=False)
     await ctx.send(embed=embed)
     
 @bot.command(name="TimePlayed", help="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
@@ -172,7 +163,7 @@ async def sair(ctx):
     else:
         await ctx.send("Não estou em nenhum canal de voz.")
 
-@bot.command(help="Para adicionar uma musica ao canal, digite '!tocar link_da_musica' ")
+@bot.command(help="Para adicionar uma musica ao canal, digite '/tocar link_da_musica' ")
 async def tocar(ctx, *, url):
     await ctx.send("🔍 Buscando a música...")
 
