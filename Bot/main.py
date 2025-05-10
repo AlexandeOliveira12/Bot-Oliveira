@@ -121,31 +121,6 @@ async def calculate_timeplayed(ctx, STEAM_ID: str):
         except Exception as e:
             await ctx.send(f"⚠️ Erro ao buscas dados: {e}")
 
-# Cotar moedas
-@bot.command(name="preco", help="Consulta o valor de uma moeda em relação a outra. Ex: !preco BTC BRL")
-async def cotar_moeda(ctx, moeda: str, base: str):
-    try:
-        simbolo = f"{moeda.upper()}{base.upper()}"
-        url = f"https://api.binance.com/api/v3/ticker/price?symbol={simbolo}"
-        response = requests.get(url)
-        data = response.json()
-        
-        if "price" in data:
-            preco = float(data["price"])
-            
-            embed = discord.Embed(
-                title=f"💰 Cotação: {moeda.upper()}/{base.upper()}",
-                description=f"O preço atual é **{preco:,.2f} {base.upper()}**",
-                color=0x00FF00
-            )
-            embed.set_footer(text="Fonte: Binance", icon_url="https://cryptologos.cc/logos/binance-coin-bnb-logo.png")
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"❌ Par **{moeda}/{base}** não encontrado na Binance.")
-    except Exception as e:
-        await ctx.send("⚠️ Ocorreu um erro ao buscar o preço.")
-        print(e)
-
 @bot.command(help="Para que o Bot possa entrar no canal de musica")
 async def entrar(ctx):
     if ctx.author.voice:
