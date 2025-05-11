@@ -50,7 +50,7 @@ async def on_ready():
         embed.set_footer(text="Status atualizado automaticamente.")
         await canal.send(embed=embed)
 
-    await tree.sync()  # Sincroniza os Slash Commands com o Discord
+    await bot.tree.sync()  # Sincroniza os Slash Commands com o Discord
     current_time.start()
 
 @bot.event
