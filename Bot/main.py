@@ -163,9 +163,20 @@ frases_motivacionais = [
     ("A confiança é uma mulher ingrata, Que te beija e te abraça, te rouba e te mata.", "Racionais MC's"),
     ("De todos os animais selvagens, o homem jovem é o mais difícil de domar.", "Platão"),
     ("Deve-se temer a velhice, porque ela nunca vem só. Bengalas são provas de idade e não de prudência.", "Platão"),
-    ("É mais fácil lidar com uma má consciência do que com uma má reputação.", "Friedrich Nietzsche")
-    
+    ("É mais fácil lidar com uma má consciência do que com uma má reputação.", "Friedrich Nietzsche"),
+    ("O que me preocupa não é o grito dos maus. É o silêncio dos bons.", "Martin Luther King Jr."),
+    ("Não espere por uma crise para descobrir o que é importante em sua vida.", "Platão"),
+    ("A coragem é a primeira das qualidades humanas porque garante todas as outras.", "Aristóteles"),
+    ("A maior glória em viver não está em nunca cair, mas em nos levantar cada vez que caímos.", "Nelson Mandela"),
+    ("Quem olha para fora, sonha; quem olha para dentro, desperta.", "Carl Jung"),
+    ("A mente que se abre a uma nova ideia jamais voltará ao seu tamanho original.", "Albert Einstein"),
+    ("Nada é pequeno quando feito com amor.", "Cícero"),
+    ("A felicidade não está em fazer o que se quer, mas em querer o que se faz.", "Jean-Paul Sartre"),
+    ("Se queres ser feliz amanhã, tenta hoje mesmo.", "Liang Tzu"),
+    ("É durante os momentos mais sombrios que devemos focar para ver a luz.", "Aristóteles"),
+    ("A vida é 10% o que acontece com você e 90% como você reage a isso.", "Charles Swindoll")
 ]
+
 emojis = [
     ("😁"),
     ("✌️"),
@@ -175,8 +186,18 @@ emojis = [
     ("☀️"),
     ("💰"),
     ("🍎"),
-    ("🖖")
+    ("🖖"),
+    ("🔥"),
+    ("🎯"),
+    ("🎉"),
+    ("🤖"),
+    ("🧠"),
+    ("🚀"),
+    ("🐍"),
+    ("🛡️"),
+    ("📚")
 ]
+
 
 @tasks.loop(hours=24)
 async def current_time():
