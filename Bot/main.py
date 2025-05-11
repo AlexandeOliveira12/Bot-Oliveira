@@ -98,19 +98,17 @@ def save_steam_data(data):
     with open("steam_to_discord.json", "w") as f:
         json.dump(data, f, indent=4)
 
-# Comando Slash para vincular um Steam ID a um usuário do Discord
 @bot.tree.command(name="linksteam", description="Vincula seu Steam ID ao seu usuário do Discord")
 async def linksteam_slash(interaction: discord.Interaction, steam_id: str):
-    await interaction.response.defer(ephemeral=True)  # Resposta visível apenas para o autor
-
+    await interaction.response.defer()
     steam_data = load_steam_data()
 
     if steam_id in steam_data:
-        await interaction.followup.send("🚫 Este Steam ID já está vinculado a outro usuário!")
+        await interaction.followup.send("Este Steam ID já está vinculado a outro usuário!")
     else:
         steam_data[steam_id] = str(interaction.user.id)
         save_steam_data(steam_data)
-        await interaction.followup.send(f"✅ Steam ID `{steam_id}` foi vinculado ao seu usuário do Discord!")
+        await interaction.followup.send(f"Steam ID {steam_id} foi vinculado ao seu usuário do Discord!")
 
 # Comando Slash para exibir os jogos mais jogados (slash)
 @bot.tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
