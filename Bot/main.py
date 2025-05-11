@@ -155,7 +155,23 @@ async def restart(interaction: discord.Interaction):
 @tasks.loop(hours=24)
 async def current_time():
     channel = bot.get_channel(1367650512492695572)
-    await channel.send("")
+
+    try:
+        # Requisição para API com frases motivacionais em português
+        response = requests.get("https://frasedodia.herokuapp.com/frase")
+        data = response.json()
+
+        frase = data['texto']
+        autor = data['autor']
+
+        mensagem = f"🌟 *\"{frase}\"* — **{autor}**"
+
+        if channel:
+            await channel.send(mensagem)
+
+    except Exception as e:
+        if channel:
+            await channel.send("⚠️ Não foi possível obter a frase do dia.")
 
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
