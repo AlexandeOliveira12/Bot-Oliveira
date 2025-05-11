@@ -86,7 +86,7 @@ async def qap_slash(interaction: discord.Interaction):
 
 # TimePlayed
 @tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
-async def timeplayed_slash(interaction: discord.Interaction, steam_id: str, user: discord.Member):
+async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
     await interaction.response.defer()  # Indica ao Discord que o bot precisa de mais tempo para responder
     try:
         API_KEY = config("API_KEY")
@@ -121,7 +121,7 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str, user
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title=f"🎮 {user.mention} Esses são seus jogos mais jogados!! 🎮",
+                title=f"🎮 Esses são seus jogos mais jogados!! 🎮",
                 description="Aqui estão os jogos com o maior tempo de jogo.",
                 color=0x00FF00
             )
