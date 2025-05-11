@@ -1,18 +1,23 @@
 from datetime import datetime
+import sys
 import re
-from decouple import config
 import requests
+
+from decouple import config
 import discord
-from discord.app_commands import Command, Group, command  # Importações necessárias para Slash Commands
+from discord.app_commands import Command, Group, command
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MissingRequiredArgument, CommandNotFound
-import yt_dlp
+
+
 
 intents = discord.Intents.default()
 intents.message_content = True  # Necessário para ler mensagens
 
 bot = commands.Bot(command_prefix="/", intents=intents, help_command=None)
 tree = bot.tree  # Objeto para registrar Slash Commands
+
+# ------------------------------------------ BOT EVENTS ------------------------------------------ #
 
 palavras_regex = re.compile(r"\b(merda|porra|caralho|bct|prr|krlh|puta|puto|fdp|filho da puta|desgraçado|bosta|vagabundo|vagabunda|arrombado|cuzão|cuzinha|buceta|babaca|otário|otaria|escroto|escrota|viado|veado|boiola|piranha|cacete|rola|pau no cu|pau|corno|corna|retardado|mongol|jumento|anta|imbecil|idiota|burro|burra)\b", re.IGNORECASE)
 
@@ -54,13 +59,10 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
-# QAP
-@tree.command(name="qap", description="Testa se o bot está online")
-async def qap_slash(interaction: discord.Interaction):
-    await interaction.response.send_message("QAP Comando, Prossiga!!")
+# ------------------------------------------ BOT COMANDS ------------------------------------------ #
 
 # Help
-@tree.command(name="help", description="Mostra todos os comandos disponíveis")
+@tree.command(name="help", description="Mostra to       dos os comandos disponíveis")
 async def help_slash(interaction: discord.Interaction):
     try:
         await interaction.response.defer()  # Defere a resposta, indicando que o bot está processando o comando
@@ -76,8 +78,13 @@ async def help_slash(interaction: discord.Interaction):
         await interaction.followup.send(f"⚠️ Ocorreu um erro ao tentar listar os comandos: {e}")
 
 
+# QAP
+@tree.command(name="qap", description="Testa se o bot está online (Ping)")
+async def qap_slash(interaction: discord.Interaction):
+    await interaction.response.send_message("QAP Comando, Prossiga!!")
+
 # TimePlayed
-@tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
+@tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
 async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
     await interaction.response.defer()  # Indica ao Discord que o bot precisa de mais tempo para responder
     try:
@@ -131,6 +138,19 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             await interaction.followup.send("Nenhum jogo encontrado ou perfil privado.")
     except Exception as e:
         await interaction.followup.send(f"⚠️ Erro ao buscas dados: {e}")
+
+# Comando de reinício
+@tree.command(name="restart", description="Reinicia o bot")
+async def restart(interaction: discord.Interaction):
+    # Verifica se o usuário tem permissões de administrador
+    if interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("Reiniciando o bot... 🚀")
+
+        # Encerra o bot, o que fará a Railway reiniciar o container automaticamente
+        sys.exit("Bot reiniciado!")  # Railway reiniciará automaticamente o container.
+
+    else:
+        await interaction.response.send_message("Você não tem permissão para reiniciar o bot.")
 
 @tasks.loop(hours=24)
 async def current_time():
