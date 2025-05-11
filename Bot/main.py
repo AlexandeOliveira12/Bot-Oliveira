@@ -84,10 +84,9 @@ async def help_slash(interaction: discord.Interaction):
 async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
-# TimePlayed
 @tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
 async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
-    await interaction.response.defer()  # Indica ao Discord que o bot precisa de mais tempo para responder
+    await interaction.response.defer()
     try:
         API_KEY = config("API_KEY")
 
@@ -102,11 +101,9 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
         response = requests.get(url, params=params)
         data = response.json()
 
-        # Verifica se há jogos
         if "response" in data and "games" in data["response"]:
             jogos = data["response"]["games"]
 
-            # Converte minutos para horas e organiza em lista
             ranking = [
                 {
                     "nome": jogo["name"],
@@ -116,21 +113,18 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
                 if jogo["playtime_forever"] > 0
             ]
 
-            # Ordena do maior para o menor tempo
             ranking.sort(key=lambda x: x["horas"], reverse=True)
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title=f"🎮 {ctx.author.mention}, Esses são seus jogos mais jogados!! 🎮",
-                description="Aqui estão os jogos com o maior tempo de jogo.",
+                title="🎮 Esses são seus jogos mais jogados!! 🎮",
+                description=f"{interaction.user.mention}, aqui estão os jogos com o maior tempo de jogo.",
                 color=0x00FF00
             )
 
-            # Adiciona o total de horas jogadas ao embed
-            total_hours = sum([jogo['horas'] for jogo in top10])
+            total_hours = sum(j["horas"] for j in top10)
             embed.add_field(name="Total de Horas Jogadas", value=f"{total_hours} horas", inline=False)
 
-            # Adiciona os jogos mais jogados
             for i, jogo in enumerate(top10, start=1):
                 embed.add_field(name=f"{i}. {jogo['nome']}", value=f"{jogo['horas']} horas", inline=True)
 
@@ -138,7 +132,7 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
         else:
             await interaction.followup.send("Nenhum jogo encontrado ou perfil privado.")
     except Exception as e:
-        await interaction.followup.send(f"⚠️ Erro ao buscas dados: {e}")
+        await interaction.followup.send(f"⚠️ Erro ao buscar dados: {e}")
 
 # Comando de reinício
 @tree.command(name="restart", description="Reinicia o bot")
