@@ -6,6 +6,7 @@ import random
 import json
 
 from decouple import config
+from discord import app_commands
 import discord
 from discord.app_commands import Command, Group, command
 from discord.ext import commands, tasks
