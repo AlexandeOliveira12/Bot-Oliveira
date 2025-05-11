@@ -4,6 +4,7 @@ import re
 import requests
 import random
 import json
+import os
 
 from decouple import config
 from discord import app_commands
