@@ -3,6 +3,7 @@ import sys
 import re
 import requests
 import random
+import json
 
 from decouple import config
 import discord
@@ -84,10 +85,48 @@ async def help_slash(interaction: discord.Interaction):
 async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
-@tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
+# Função para carregar dados do JSON
+def load_steam_data():
+    try:
+        with open("steam_to_discord.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+# Função para salvar dados no JSON
+def save_steam_data(data):
+    with open("steam_to_discord.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+# Comando Slash para vincular um Steam ID a um usuário do Discord
+@bot.tree.command(name="linksteam", description="Vincula seu Steam ID ao seu usuário do Discord")
+async def linksteam_slash(interaction: discord.Interaction, steam_id: str):
+    await interaction.response.defer(ephemeral=True)  # Resposta visível apenas para o autor
+
+    steam_data = load_steam_data()
+
+    if steam_id in steam_data:
+        await interaction.followup.send("🚫 Este Steam ID já está vinculado a outro usuário!")
+    else:
+        steam_data[steam_id] = str(interaction.user.id)
+        save_steam_data(steam_data)
+        await interaction.followup.send(f"✅ Steam ID `{steam_id}` foi vinculado ao seu usuário do Discord!")
+
+# Comando Slash para exibir os jogos mais jogados (slash)
+@bot.tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
 async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
     await interaction.response.defer()
     try:
+        steam_data = load_steam_data()
+
+        if steam_id not in steam_data:
+            await interaction.followup.send("Este Steam ID não está vinculado a nenhum usuário do Discord.")
+            return
+
+        discord_user_id = steam_data[steam_id]
+        discord_user = bot.get_user(int(discord_user_id))
+
+        # Buscar dados da Steam
         API_KEY = config("API_KEY")
 
         url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
@@ -117,8 +156,8 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title="🎮 Esses são seus jogos mais jogados!! 🎮",
-                description=f"{interaction.user.mention}, aqui estão os jogos com o maior tempo de jogo.",
+                title="🎮 Seus Jogos Mais Jogados 🎮",
+                description=f"{discord_user.mention}, Aqui estão seus jogos mais jogados.",
                 color=0x00FF00
             )
 
@@ -133,6 +172,9 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             await interaction.followup.send("Nenhum jogo encontrado ou perfil privado.")
     except Exception as e:
         await interaction.followup.send(f"⚠️ Erro ao buscar dados: {e}")
+
+bot.run("YOUR_BOT_TOKEN")
+
 
 # Comando de reinício
 @tree.command(name="restart", description="Reinicia o bot")
