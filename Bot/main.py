@@ -85,48 +85,54 @@ async def help_slash(interaction: discord.Interaction):
 async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
+STEAM_FILE = "steam_ids.json"
+
 # Função para carregar dados do JSON
 def load_steam_data():
-    try:
-        with open("steam_to_discord.json", "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
+    if not os.path.exists(STEAM_FILE):
         return {}
+    with open(STEAM_FILE, "r") as f:
+        return json.load(f)
 
 # Função para salvar dados no JSON
-def save_steam_data(data):
-    with open("steam_to_discord.json", "w") as f:
-        json.dump(data, f, indent=4)
+def load_steam_data():
+    if not os.path.exists(STEAM_FILE):
+        return {}
+    with open(STEAM_FILE, "r") as f:
+        return json.load(f)
 
-@bot.tree.command(name="linksteam", description="Vincula seu Steam ID ao seu usuário do Discord")
-async def linksteam_slash(interaction: discord.Interaction, steam_id: str):
-    await interaction.response.defer()
+@bot.tree.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
+@app_commands.describe(steam_id="Seu Steam ID numérico")
+async def linksteam(interaction: discord.Interaction, steam_id: str):
     steam_data = load_steam_data()
 
     if steam_id in steam_data:
-        await interaction.followup.send("Este Steam ID já está vinculado a outro usuário!")
+        await interaction.response.send_message("Este Steam ID já está vinculado a outro usuário!", ephemeral=True)
     else:
         steam_data[steam_id] = str(interaction.user.id)
         save_steam_data(steam_data)
-        await interaction.followup.send(f"Steam ID {steam_id} foi vinculado ao seu usuário do Discord!")
+        await interaction.response.send_message(f"Steam ID `{steam_id}` vinculado com sucesso!", ephemeral=True)
 
 # Comando Slash para exibir os jogos mais jogados (slash)
 @bot.tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
-async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
+async def timeplayed_slash(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         steam_data = load_steam_data()
 
-        if steam_id not in steam_data:
-            await interaction.followup.send("Este Steam ID não está vinculado a nenhum usuário do Discord.")
-            return
+        # Recuperar Steam ID do usuário
+        steam_id = None
+        for key, value in steam_data.items():
+            if value == str(interaction.user.id):
+                steam_id = key
+                break
 
-        discord_user_id = steam_data[steam_id]
-        discord_user = bot.get_user(int(discord_user_id))
+        if not steam_id:
+            await interaction.followup.send("Você não vinculou seu Steam ID ainda. Use o comando `/linksteam`.")
+            return
 
         # Buscar dados da Steam
         API_KEY = config("API_KEY")
-
         url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
         params = {
             "key": API_KEY,
@@ -141,25 +147,32 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
         if "response" in data and "games" in data["response"]:
             jogos = data["response"]["games"]
 
+            # Filtrar e calcular o tempo total de horas jogadas
             ranking = [
                 {
                     "nome": jogo["name"],
-                    "horas": round(jogo["playtime_forever"] / 60, 2)
+                    "horas": round(jogo["playtime_forever"] / 60, 2)  # Convertendo minutos para horas
                 }
                 for jogo in jogos
-                if jogo["playtime_forever"] > 0
+                if jogo["playtime_forever"] > 0  # Somente jogos com tempo jogado
             ]
 
+            # Ordenar os jogos por horas jogadas em ordem decrescente
             ranking.sort(key=lambda x: x["horas"], reverse=True)
+
+            # Pegando os 10 jogos mais jogados
             top10 = ranking[:10]
 
+            # Calculando o total de horas jogadas
+            total_hours = sum(jogo["horas"] for jogo in top10)
+
+            # Criando a resposta com os jogos
             embed = discord.Embed(
                 title="🎮 Seus Jogos Mais Jogados 🎮",
-                description=f"{discord_user.mention}, Aqui estão seus jogos mais jogados.",
+                description=f"{interaction.user.mention}, Aqui estão seus jogos mais jogados na Steam.",
                 color=0x00FF00
             )
 
-            total_hours = sum(j["horas"] for j in top10)
             embed.add_field(name="Total de Horas Jogadas", value=f"{total_hours} horas", inline=False)
 
             for i, jogo in enumerate(top10, start=1):
@@ -168,6 +181,7 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             await interaction.followup.send(embed=embed)
         else:
             await interaction.followup.send("Nenhum jogo encontrado ou perfil privado.")
+
     except Exception as e:
         await interaction.followup.send(f"⚠️ Erro ao buscar dados: {e}")
 
