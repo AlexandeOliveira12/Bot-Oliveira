@@ -2,6 +2,7 @@ from datetime import datetime
 import sys
 import re
 import requests
+import random
 
 from decouple import config
 import discord
@@ -152,26 +153,29 @@ async def restart(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("Você não tem permissão para reiniciar o bot.")
 
+
+frases_motivacionais = [
+    ("A persistência é o caminho do êxito.", "Charles Chaplin"),
+    ("Só se pode alcançar um grande êxito quando nos mantemos fiéis a nós mesmos.", "Friedrich Nietzsche"),
+    ("Tente mover o mundo – o primeiro passo será mover a si mesmo.", "Platão"),
+    ("A vantagem de ter péssima memória é divertir-se muitas vezes com as mesmas coisas boas como se fosse a primeira vez.", "Friedrich Nietzsche")
+    ("O sucesso nasce do querer, da determinação e persistência em se chegar a um objetivo.", "José de Alencar"),
+    ("A confiança é uma mulher ingrata, Que te beija e te abraça, te rouba e te mata.", "Racionais MC's"),
+    ("De todos os animais selvagens, o homem jovem é o mais difícil de domar.", "Platão"),
+    ("Deve-se temer a velhice, porque ela nunca vem só. Bengalas são provas de idade e não de prudência.", "Platão"),
+    ("É mais fácil lidar com uma má consciência do que com uma má reputação.", "Friedrich Nietzsche")
+    
+]
+
 @tasks.loop(hours=24)
 async def current_time():
     channel = bot.get_channel(1367650512492695572)
 
-    try:
-        # Requisição para API com frases motivacionais em português
-        response = requests.get("https://frasedodia.herokuapp.com/frase")
-        data = response.json()
+    frase, autor = random.choice(frases_motivacionais)
+    mensagem = f"🌟 *\"{frase}\"* — **{autor}**"
 
-        frase = data['texto']
-        autor = data['autor']
-
-        mensagem = f"🌟 *\"{frase}\"* — **{autor}**"
-
-        if channel:
-            await channel.send(mensagem)
-
-    except Exception as e:
-        if channel:
-            await channel.send("⚠️ Não foi possível obter a frase do dia.")
+    if channel:
+        await channel.send(mensagem)
 
 TOKEN = config("TOKEN")
 bot.run(TOKEN)
