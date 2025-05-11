@@ -166,13 +166,25 @@ frases_motivacionais = [
     ("É mais fácil lidar com uma má consciência do que com uma má reputação.", "Friedrich Nietzsche")
     
 ]
+emojis = [
+    ("😁"),
+    ("✌️"),
+    ("🥶"),
+    ("⛅"),
+    ("🌹"),
+    ("☀️"),
+    ("💰"),
+    ("🍎"),
+    ("🖖")
+]
 
 @tasks.loop(hours=24)
 async def current_time():
     channel = bot.get_channel(1367650512492695572)
 
     frase, autor = random.choice(frases_motivacionais)
-    mensagem = f"🌟 *\"{frase}\"* — **{autor}**"
+    emoji = random.choice(emojis)
+    mensagem = f"{emoji} *\"{frase}\"* — **{autor}**"
 
     if channel:
         await channel.send(mensagem)
