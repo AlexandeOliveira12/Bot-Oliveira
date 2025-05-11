@@ -158,7 +158,7 @@ frases_motivacionais = [
     ("A persistência é o caminho do êxito.", "Charles Chaplin"),
     ("Só se pode alcançar um grande êxito quando nos mantemos fiéis a nós mesmos.", "Friedrich Nietzsche"),
     ("Tente mover o mundo – o primeiro passo será mover a si mesmo.", "Platão"),
-    ("A vantagem de ter péssima memória é divertir-se muitas vezes com as mesmas coisas boas como se fosse a primeira vez.", "Friedrich Nietzsche")
+    ("A vantagem de ter péssima memória é divertir-se muitas vezes com as mesmas coisas boas como se fosse a primeira vez.", "Friedrich Nietzsche"),
     ("O sucesso nasce do querer, da determinação e persistência em se chegar a um objetivo.", "José de Alencar"),
     ("A confiança é uma mulher ingrata, Que te beija e te abraça, te rouba e te mata.", "Racionais MC's"),
     ("De todos os animais selvagens, o homem jovem é o mais difícil de domar.", "Platão"),
