@@ -40,7 +40,7 @@ async def on_ready():
         embed = discord.Embed(
             title="🤖 Bot Oliveira Online!",
             description="O bot foi iniciado com sucesso e está pronto para uso!",
-            color=0x00ff00  # Verde
+            color=0x00ff00
         )
         embed.set_thumbnail(url=bot.user.display_avatar.url)
         embed.set_footer(text="Status atualizado automaticamente.")
@@ -58,12 +58,12 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
-# Convertendo o comando QAP para Slash Command
+# QAP
 @tree.command(name="qap", description="Testa se o bot está online")
 async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
-# Convertendo o comando help para Slash Command
+# Help
 @tree.command(name="ajuda", description="Mostra todos os comandos disponíveis")
 async def ajuda_slash(interaction: discord.Interaction):
     embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
@@ -71,7 +71,7 @@ async def ajuda_slash(interaction: discord.Interaction):
         embed.add_field(name=f"/{command.name}", value=command.help, inline=False)
     await interaction.response.send_message(embed=embed)
 
-# Convertendo o comando TimePlayed para Slash Command
+# TimePlayed
 @tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
 async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
     await interaction.response.defer() # Indica ao Discord que o bot precisa de mais tempo para responder
@@ -126,76 +126,6 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             await interaction.followup.send("Nenhum jogo encontrado ou perfil privado.")
     except Exception as e:
         await interaction.followup.send(f"⚠️ Erro ao buscas dados: {e}")
-
-# Convertendo o comando entrar para Slash Command
-@tree.command(name="entrar", description="Para que o Bot possa entrar no canal de musica")
-async def entrar_slash(interaction: discord.Interaction):
-    if interaction.user.voice and interaction.user.voice.channel:
-        canal = interaction.user.voice.channel
-        try:
-            await canal.connect()
-            await interaction.response.send_message("Entrei no canal de voz!")
-        except discord.ClientException:
-            await interaction.response.send_message("Já estou conectado a um canal de voz.")
-        except discord.opus.OpusNotLoaded:
-            await interaction.response.send_message("Não foi possível conectar ao canal de voz. Certifique-se de que o Opus esteja instalado.")
-    else:
-        await interaction.response.send_message("Você precisa estar em um canal de voz.")
-
-# Convertendo o comando sair para Slash Command
-@tree.command(name="sair", description="Para que o Bot possa sair do canal de musica")
-async def sair_slash(interaction: discord.Interaction):
-    if interaction.guild.voice_client:
-        await interaction.guild.voice_client.disconnect()
-        await interaction.response.send_message("Saí do canal de voz.")
-    else:
-        await interaction.response.send_message("Não estou em nenhum canal de voz.")
-
-# Convertendo o comando tocar para Slash Command
-@tree.command(name="tocar", description="Para adicionar uma musica ao canal")
-async def tocar_slash(interaction: discord.Interaction, url: str):
-    await interaction.response.defer() # Indica ao Discord que o bot precisa de mais tempo para responder
-
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'quiet': True,
-        'noplaylist': True,
-        'default_search': 'auto',
-    }
-
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
-            info = ydl.extract_info(url, download=False)
-        except Exception:
-            await interaction.followup.send("❌ Não foi possível encontrar a música. Verifique o link.")
-            return
-
-        url_audio = info['url']
-        titulo = info.get('title', 'Sem título')
-
-    if not interaction.guild.voice_client:
-        if interaction.user.voice and interaction.user.voice.channel:
-            try:
-                await interaction.user.voice.channel.connect()
-            except discord.ClientException:
-                await interaction.followup.send("Já estou conectado a um canal de voz.")
-                return
-            except discord.opus.OpusNotLoaded:
-                await interaction.followup.send("Não foi possível conectar ao canal de voz. Certifique-se de que o Opus esteja instalado.")
-                return
-        else:
-            await interaction.followup.send("Você precisa estar em um canal de voz!")
-            return
-
-    if interaction.guild.voice_client.is_playing():
-        interaction.guild.voice_client.stop()
-
-    try:
-        source = await discord.FFmpegOpusAudio.from_probe(url_audio, method='fallback')
-        interaction.guild.voice_client.play(source)
-        await interaction.followup.send(f"🎶 Tocando agora: **{titulo}**")
-    except Exception as e:
-        await interaction.followup.send(f"⚠️ Erro ao tocar a música: {e}")
 
 @tasks.loop(hours=24)
 async def current_time():
