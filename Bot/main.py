@@ -121,7 +121,7 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
             top10 = ranking[:10]
 
             embed = discord.Embed(
-                title=f"🎮 Esses são seus jogos mais jogados!! 🎮",
+                title=f"🎮 {ctx.author.mention}, Esses são seus jogos mais jogados!! 🎮",
                 description="Aqui estão os jogos com o maior tempo de jogo.",
                 color=0x00FF00
             )
