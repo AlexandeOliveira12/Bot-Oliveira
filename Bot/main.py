@@ -67,8 +67,8 @@ async def qap_slash(interaction: discord.Interaction):
 @tree.command(name="ajuda", description="Mostra todos os comandos disponíveis")
 async def ajuda_slash(interaction: discord.Interaction):
     embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
-    for command in bot.commands:
-        embed.add_field(name=f"/{command.name}", value=command.help, inline=False)
+    for command in tree.commands:
+        embed.add_field(name=f"/{command.name}", value=command.description, inline=False)
     await interaction.response.send_message(embed=embed)
 
 # TimePlayed
