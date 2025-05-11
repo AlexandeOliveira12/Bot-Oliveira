@@ -1,22 +1,18 @@
 from datetime import datetime
 import re
-
 from decouple import config
 import requests
-
 import discord
 from discord.app_commands import Command, Group, command  # Importações necessárias para Slash Commands
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MissingRequiredArgument, CommandNotFound
-
 import yt_dlp
-
 
 intents = discord.Intents.default()
 intents.message_content = True  # Necessário para ler mensagens
 
 bot = commands.Bot(command_prefix="/", intents=intents, help_command=None)
-tree = bot.tree # Objeto para registrar Slash Commands
+tree = bot.tree  # Objeto para registrar Slash Commands
 
 palavras_regex = re.compile(r"\b(merda|porra|caralho|bct|prr|krlh|puta|puto|fdp|filho da puta|desgraçado|bosta|vagabundo|vagabunda|arrombado|cuzão|cuzinha|buceta|babaca|otário|otaria|escroto|escrota|viado|veado|boiola|piranha|cacete|rola|pau no cu|pau|corno|corna|retardado|mongol|jumento|anta|imbecil|idiota|burro|burra)\b", re.IGNORECASE)
 
@@ -46,7 +42,7 @@ async def on_ready():
         embed.set_footer(text="Status atualizado automaticamente.")
         await canal.send(embed=embed)
 
-    await tree.sync() # Sincroniza os Slash Commands com o Discord
+    await tree.sync()  # Sincroniza os Slash Commands com o Discord
     current_time.start()
 
 @bot.event
@@ -64,17 +60,17 @@ async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
 # Help
-@tree.command(name="ajuda", description="Mostra todos os comandos disponíveis")
-async def ajuda_slash(interaction: discord.Interaction):
+@tree.command(name="help", description="Mostra todos os comandos disponíveis")
+async def help_slash(interaction: discord.Interaction):
     embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
     for command in tree.commands:
-        embed.add_field(name=f"/{command.name}", value=command.description, inline=False)
+        embed.add_field(name=f"/{command.name}", value=command.description or "Sem descrição", inline=False)
     await interaction.response.send_message(embed=embed)
 
 # TimePlayed
 @tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
 async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
-    await interaction.response.defer() # Indica ao Discord que o bot precisa de mais tempo para responder
+    await interaction.response.defer()  # Indica ao Discord que o bot precisa de mais tempo para responder
     try:
         API_KEY = config("API_KEY")
 
@@ -129,9 +125,7 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
 
 @tasks.loop(hours=24)
 async def current_time():
-
     channel = bot.get_channel(1367650512492695572)
-
     await channel.send("")
 
 TOKEN = config("TOKEN")
