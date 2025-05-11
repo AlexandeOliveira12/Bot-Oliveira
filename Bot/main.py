@@ -173,9 +173,6 @@ async def timeplayed_slash(interaction: discord.Interaction, steam_id: str):
     except Exception as e:
         await interaction.followup.send(f"⚠️ Erro ao buscar dados: {e}")
 
-bot.run("YOUR_BOT_TOKEN")
-
-
 # Comando de reinício
 @tree.command(name="restart", description="Reinicia o bot")
 async def restart(interaction: discord.Interaction):
