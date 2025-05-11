@@ -66,12 +66,15 @@ async def help_slash(interaction: discord.Interaction):
         await interaction.response.defer()  # Defere a resposta, indicando que o bot está processando o comando
         
         embed = discord.Embed(title="📘 Lista de Comandos", color=0x00ff00)
-        for command in tree.commands:
+        
+        # Obtemos todos os comandos registrados de forma correta
+        for command in bot.tree.get_commands():
             embed.add_field(name=f"/{command.name}", value=command.description or "Sem descrição", inline=False)
         
         await interaction.followup.send(embed=embed)
     except Exception as e:
         await interaction.followup.send(f"⚠️ Ocorreu um erro ao tentar listar os comandos: {e}")
+
 
 # TimePlayed
 @tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por TEMPO JOGADO")
