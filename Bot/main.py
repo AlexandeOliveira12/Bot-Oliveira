@@ -91,17 +91,22 @@ STEAM_FILE = "steam_ids.json"
 
 # Função para carregar dados do JSON
 def load_steam_data():
-    if not os.path.exists(STEAM_FILE):
-        return {}
-    with open(STEAM_FILE, "r") as f:
-        return json.load(f)
+    try:
+        with open('steam_data.json', 'r') as f:
+            content = f.read().strip()  # Remover espaços em branco extras
+            if not content:  # Verificar se o conteúdo está vazio
+                raise ValueError("O arquivo JSON está vazio.")
+            return json.loads(content)
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o arquivo JSON. Verifique o formato do arquivo.")
+    except FileNotFoundError:
+        print("O arquivo JSON não foi encontrado.")
+    except ValueError as ve:
+        print(str(ve))
+    except Exception as e:
+        print(f"Ocorreu um erro inesperado: {e}")
 
-# Função para salvar dados no JSON
-def load_steam_data():
-    if not os.path.exists(STEAM_FILE):
-        return {}
-    with open(STEAM_FILE, "r") as f:
-        return json.load(f)
+# Função para salvar dados 
 
 @bot.tree.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
 @app_commands.describe(steam_id="Seu Steam ID numérico")
