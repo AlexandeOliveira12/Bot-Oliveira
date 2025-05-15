@@ -41,7 +41,8 @@ async def on_ready():
     if canal:
         embed = discord.Embed(
             title="🤖 Bot Oliveira Online!",
-            description="O bot foi iniciado com sucesso e está pronto para uso!",
+            description="""O bot foi iniciado com sucesso e está pronto para uso!
+Em outras palavras, **O PAI TA ON**😎""",
             color=0x00ff00
         )
         embed.set_thumbnail(url=bot.user.display_avatar.url)
