@@ -91,34 +91,43 @@ STEAM_FILE = "steam_ids.json"
 
 # Função para carregar dados do JSON
 def load_steam_data():
-    try:
-        with open('steam_data.json', 'r') as f:
-            content = f.read().strip()  # Remover espaços em branco extras
-            if not content:  # Verificar se o conteúdo está vazio
-                raise ValueError("O arquivo JSON está vazio.")
-            return json.loads(content)
-    except json.JSONDecodeError:
-        print("Erro ao decodificar o arquivo JSON. Verifique o formato do arquivo.")
-    except FileNotFoundError:
-        print("O arquivo JSON não foi encontrado.")
-    except ValueError as ve:
-        print(str(ve))
-    except Exception as e:
-        print(f"Ocorreu um erro inesperado: {e}")
+    if not os.path.exists(STEAM_FILE):
+        return {}
+    with open(STEAM_FILE, "r") as f:
+        return json.load(f)
 
-# Função para salvar dados 
+# Função para salvar dados no JSON
+def load_steam_data():
+    if not os.path.exists(STEAM_FILE):
+        return {}
+    with open(STEAM_FILE, "r") as f:
+        return json.load(f)
 
 @bot.tree.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
 @app_commands.describe(steam_id="Seu Steam ID numérico")
 async def linksteam(interaction: discord.Interaction, steam_id: str):
     steam_data = load_steam_data()
 
-    if steam_id in steam_data:
-        await interaction.response.send_message("Este Steam ID já está vinculado a outro usuário!", ephemeral=True)
-    else:
-        steam_data[steam_id] = str(interaction.user.id)
-        save_steam_data(steam_data)
-        await interaction.response.send_message(f"Steam ID `{steam_id}` vinculado com sucesso!", ephemeral=True)
+        user_id = str(interaction.user.id)
+
+        # Verificação se esse SteamID já foi registrado
+        if steam_id in steam_data.values():
+            await interaction.response.send_message("❌ Esse SteamID já está vinculado a outro usuário.", ephemeral=True)
+            return
+
+        # Verificação se o usuário já vinculou uma Steam
+        if user_id in steam_data:
+            await interaction.response.send_message(f"❌ Você já vinculou a Steam `{steam_data[user_id]}`.\nEntre em contato com um administrador para alterar.", ephemeral=True)
+            return
+
+        # Vincular o SteamID ao usuário
+        steam_data[user_id] = steam_id
+        salvar_steam_data(steam_data_path, steam_data)
+
+        await interaction.response.send_message(f"✅ SteamID `{steam_id}` vinculado com sucesso!", ephemeral=True)
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Steam(bot))
 
 # Comando Slash para exibir os jogos mais jogados (slash)
 @bot.tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
