@@ -36,10 +36,10 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-@bot.event
 async def on_ready():
     print(f"Estou pronto! Estou conectado como {bot.user}")
 
+    # Canal onde o bot enviará o embed de status
     canal = bot.get_channel(1367650512492695572)
     if canal:
         embed = discord.Embed(
@@ -51,7 +51,16 @@ async def on_ready():
         embed.set_footer(text="Status atualizado automaticamente.")
         await canal.send(embed=embed)
 
-    await bot.tree.sync()  # Sincroniza os Slash Commands com o Discord
+    # ID do servidor onde os comandos serão sincronizados rapidamente
+    GUILD_ID = 1195507908075597844
+
+    try:
+        synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
+        print(f"✅ {len(synced)} comando(s) sincronizado(s) com sucesso no servidor {GUILD_ID}!")
+    except Exception as e:
+        print(f"❌ Erro ao sincronizar comandos: {e}")
+
+    # Inicia tarefas de background
     current_time.start()
 
 @bot.event
