@@ -36,7 +36,10 @@ async def on_message(message):
 
 @bot.event
 async def on_ready():
-    print(f"Estou pronto! Estou conectado como {bot.user}")
+    print(f"Bot conectado como {bot.user}")
+    canal = bot.get_channel(1372582358523449484)
+    if canal:
+        await canal.send("⏰ O pai ta On!")
 
     # Canal de status
     canal = bot.get_channel(1367650512492695572)
@@ -261,12 +264,6 @@ frases_motivacionais = [
 async def motivacao_slash(interaction: discord.Interaction):
     frase, autor = random.choice(frases_motivacionais)
     await interaction.response.send_message(f'"{frase}"\n- {autor}')
-
-@tasks.loop()
-async def current_time():
-    canal = bot.get_channel(1372582358523449484)
-    if canal:
-        await canal.send(f"⏰ O pai ta On!")
 
 # ------------------------------------------ INÍCIO ------------------------------------------ #
 
