@@ -88,6 +88,8 @@ async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
 STEAM_FILE = "steam_ids.json"
+steam_data_path = STEAM_FILE  # ou qualquer caminho desejado
+
 
 # Função para carregar dados do JSON
 def load_steam_data():
@@ -95,36 +97,36 @@ def load_steam_data():
         return {}
     with open(STEAM_FILE, "r") as f:
         return json.load(f)
+    
+def salvar_steam_data(caminho, dados):
+    with open(caminho, "w") as f:
+        json.dump(dados, f, indent=4)
 
-# Função para salvar dados no JSON
-def load_steam_data():
-    if not os.path.exists(STEAM_FILE):
-        return {}
-    with open(STEAM_FILE, "r") as f:
-        return json.load(f)
+class Steam(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
 
 @bot.tree.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
 @app_commands.describe(steam_id="Seu Steam ID numérico")
 async def linksteam(interaction: discord.Interaction, steam_id: str):
     steam_data = load_steam_data()
 
-        user_id = str(interaction.user.id)
+    user_id = str(interaction.user.id)
 
-        # Verificação se esse SteamID já foi registrado
-        if steam_id in steam_data.values():
-            await interaction.response.send_message("❌ Esse SteamID já está vinculado a outro usuário.", ephemeral=True)
-            return
+    if steam_id in steam_data.values():
+        await interaction.response.send_message("❌ Esse SteamID já está vinculado a outro usuário.", ephemeral=True)
+        return
 
-        # Verificação se o usuário já vinculou uma Steam
-        if user_id in steam_data:
-            await interaction.response.send_message(f"❌ Você já vinculou a Steam `{steam_data[user_id]}`.\nEntre em contato com um administrador para alterar.", ephemeral=True)
-            return
+    if user_id in steam_data:
+        await interaction.response.send_message(f"❌ Você já vinculou a Steam `{steam_data[user_id]}`.\nEntre em contato com um administrador para alterar.", ephemeral=True)
+        return
 
-        # Vincular o SteamID ao usuário
-        steam_data[user_id] = steam_id
-        salvar_steam_data(steam_data_path, steam_data)
+    steam_data[user_id] = steam_id
+    salvar_steam_data(steam_data_path, steam_data)
 
-        await interaction.response.send_message(f"✅ SteamID `{steam_id}` vinculado com sucesso!", ephemeral=True)
+    await interaction.response.send_message(f"✅ SteamID `{steam_id}` vinculado com sucesso!", ephemeral=True)
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Steam(bot))
