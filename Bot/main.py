@@ -88,10 +88,8 @@ async def qap_slash(interaction: discord.Interaction):
     await interaction.response.send_message("QAP Comando, Prossiga!!")
 
 STEAM_FILE = "steam_ids.json"
-steam_data_path = STEAM_FILE  # ou qualquer caminho desejado
+steam_data_path = STEAM_FILE
 
-
-# Função para carregar dados do JSON
 def load_steam_data():
     if not os.path.exists(STEAM_FILE):
         return {}
@@ -106,27 +104,52 @@ class Steam(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @app_commands.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
+    @app_commands.describe(steam_id="Seu Steam ID numérico")
+    async def linksteam(self, interaction: discord.Interaction, steam_id: str):
+        steam_data = load_steam_data()
+        user_id = str(interaction.user.id)
 
-@bot.tree.command(name="linksteam", description="Vincule seu Steam ID ao seu Discord.")
-@app_commands.describe(steam_id="Seu Steam ID numérico")
-async def linksteam(interaction: discord.Interaction, steam_id: str):
-    steam_data = load_steam_data()
+        if steam_id in steam_data.values():
+            await interaction.response.send_message("❌ Esse SteamID já está vinculado a outro usuário.", ephemeral=True)
+            return
 
-    user_id = str(interaction.user.id)
+        if user_id in steam_data:
+            await interaction.response.send_message(
+                f"❌ Você já vinculou a Steam `{steam_data[user_id]}`.\nEntre em contato com um administrador para alterar.",
+                ephemeral=True
+            )
+            return
 
-    if steam_id in steam_data.values():
-        await interaction.response.send_message("❌ Esse SteamID já está vinculado a outro usuário.", ephemeral=True)
-        return
+        steam_data[user_id] = steam_id
+        salvar_steam_data(steam_data_path, steam_data)
 
-    if user_id in steam_data:
-        await interaction.response.send_message(f"❌ Você já vinculou a Steam `{steam_data[user_id]}`.\nEntre em contato com um administrador para alterar.", ephemeral=True)
-        return
+        await interaction.response.send_message(f"✅ SteamID `{steam_id}` vinculado com sucesso!", ephemeral=True)
 
-    steam_data[user_id] = steam_id
-    salvar_steam_data(steam_data_path, steam_data)
+    @app_commands.command(name="versteamid", description="Veja o Steam ID que você vinculou.")
+    async def versteamid(self, interaction: discord.Interaction):
+        steam_data = load_steam_data()
+        user_id = str(interaction.user.id)
 
-    await interaction.response.send_message(f"✅ SteamID `{steam_id}` vinculado com sucesso!", ephemeral=True)
+        if user_id in steam_data:
+            steam_id = steam_data[user_id]
+            await interaction.response.send_message(f"🔗 Seu SteamID vinculado é: `{steam_id}`", ephemeral=True)
+        else:
+            await interaction.response.send_message("❌ Você ainda não vinculou nenhum SteamID.", ephemeral=True)
+    
+    @app_commands.command(name="resetsteam", description="Desvincula seu Steam ID do Discord.")
+    async def desvincularsteam(self, interaction: discord.Interaction):
+        steam_data = load_steam_data()
+        user_id = str(interaction.user.id)
 
+        if user_id not in steam_data:
+            await interaction.response.send_message("❌ Você não possui nenhum SteamID vinculado.", ephemeral=True)
+            return
+
+        steam_id_removido = steam_data.pop(user_id)
+        salvar_steam_data(steam_data_path, steam_data)
+
+        await interaction.response.send_message(f"✅ SteamID `{steam_id_removido}` foi desvinculado com sucesso.", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Steam(bot))
