@@ -37,12 +37,7 @@ async def on_message(message):
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
-    canal = bot.get_channel(1372582358523449484)
-    if canal:
-        await canal.send("⏰ O pai ta On!")
-
-    # Canal de status
-    canal = bot.get_channel(1367650512492695572)
+    canal = bot.get_channel(1372584083657588787)
     if canal:
         embed = discord.Embed(
             title="🤖 Bot Oliveira Online!",
@@ -52,6 +47,8 @@ async def on_ready():
         embed.set_thumbnail(url=bot.user.display_avatar.url)
         embed.set_footer(text="Status atualizado automaticamente.")
         await canal.send(embed=embed)
+
+    await tree.sync()
 
     # 🔧 Modo de desenvolvimento (True = sync só em servidor de testes)
     MODO_DEV = True
@@ -66,9 +63,6 @@ async def on_ready():
             print(f"🌍 {len(synced)} comando(s) sincronizado(s) globalmente.")
     except Exception as e:
         print(f"❌ Erro ao sincronizar comandos: {e}")
-
-    # Inicia tarefas de background
-    current_time.start()
 
 # ------------------------------------------ ERROR HANDLER ------------------------------------------ #
 
