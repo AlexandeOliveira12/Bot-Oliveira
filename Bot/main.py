@@ -36,10 +36,11 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
+@bot.event
 async def on_ready():
     print(f"Estou pronto! Estou conectado como {bot.user}")
 
-    # Canal onde o bot enviará o embed de status
+    # Canal de status
     canal = bot.get_channel(1367650512492695572)
     if canal:
         embed = discord.Embed(
@@ -51,12 +52,17 @@ async def on_ready():
         embed.set_footer(text="Status atualizado automaticamente.")
         await canal.send(embed=embed)
 
-    # ID do servidor onde os comandos serão sincronizados rapidamente
-    GUILD_ID = 1195507908075597844
+    # 🔧 Modo de desenvolvimento (True = sync só em servidor de testes)
+    MODO_DEV = True
+    SERVIDOR_DE_TESTE = 1195507908075597844
 
     try:
-        synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))
-        print(f"✅ {len(synced)} comando(s) sincronizado(s) com sucesso no servidor {GUILD_ID}!")
+        if MODO_DEV:
+            synced = await bot.tree.sync(guild=discord.Object(id=SERVIDOR_DE_TESTE))
+            print(f"✅ {len(synced)} comando(s) sincronizado(s) no servidor de testes.")
+        else:
+            synced = await bot.tree.sync()
+            print(f"🌍 {len(synced)} comando(s) sincronizado(s) globalmente.")
     except Exception as e:
         print(f"❌ Erro ao sincronizar comandos: {e}")
 
