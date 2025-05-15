@@ -52,7 +52,7 @@ Em outras palavras, **O PAI TA ON**😎""",
     await tree.sync()
 
     # 🔧 Modo de desenvolvimento (True = sync só em servidor de testes)
-    MODO_DEV = True
+    MODO_DEV = False
     SERVIDOR_DE_TESTE = 1195507908075597844
 
     try:
