@@ -5,6 +5,8 @@ import requests
 import random
 import json
 import os
+import asyncio
+
 
 from decouple import config
 from discord import app_commands
@@ -244,15 +246,12 @@ async def timeplayed_slash(interaction: discord.Interaction):
 # Comando de reinício
 @tree.command(name="restart", description="Reinicia o bot")
 async def restart(interaction: discord.Interaction):
-    # Verifica se o usuário tem permissões de administrador
     if interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("Reiniciando o bot... 🚀")
-
-        # Encerra o bot, o que fará a Railway reiniciar o container automaticamente
-        sys.exit("Bot reiniciado!")  # Railway reiniciará automaticamente o container.
-
+        await asyncio.sleep(2)  # Pequena espera antes de encerrar
+        sys.exit("Bot reiniciado!")
     else:
-        await interaction.response.send_message("Você não tem permissão para reiniciar o bot.")
+        await interaction.response.send_message("Você não tem permissão para reiniciar o bot.") 
 
 
 frases_motivacionais = [
