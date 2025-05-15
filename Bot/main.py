@@ -243,7 +243,7 @@ async def timeplayed_slash(interaction: discord.Interaction):
 async def restart(interaction: discord.Interaction):
     if interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("Reiniciando o bot... 🚀")
-        await asyncio.sleep(2)  # Pequena espera antes de encerrar
+        await asyncio.sleep(2)
         sys.exit("Bot reiniciado!")
     else:
         await interaction.response.send_message("Você não tem permissão para reiniciar o bot.") 
@@ -262,17 +262,16 @@ async def motivacao_slash(interaction: discord.Interaction):
     frase, autor = random.choice(frases_motivacionais)
     await interaction.response.send_message(f'"{frase}"\n- {autor}')
 
-@tasks.loop(minutes=1)
+@tasks.loop()
 async def current_time():
-    canal = bot.get_channel(1367650512492695572)
+    canal = bot.get_channel(1372582358523449484)
     if canal:
-        await canal.send(f"⏰ Horário atual: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+        await canal.send(f"⏰ O pai ta On!")
 
 # ------------------------------------------ INÍCIO ------------------------------------------ #
 
 async def main():
     async with bot:
-        # Carregar Cogs
         await setup(bot)
         await bot.start(config("TOKEN"))
         
