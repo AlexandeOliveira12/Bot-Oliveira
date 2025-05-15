@@ -274,6 +274,6 @@ async def main():
     async with bot:
         # Carregar Cogs
         await setup(bot)
-        await bot.start(config("DISCORD_TOKEN"))
-
+        await bot.start(config("TOKEN"))
+        
 asyncio.run(main())
