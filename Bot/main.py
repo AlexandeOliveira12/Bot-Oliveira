@@ -7,15 +7,11 @@ import json
 import os
 import asyncio
 
-
 from decouple import config
 from discord import app_commands
 import discord
-from discord.app_commands import Command, Group, command
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import MissingRequiredArgument, CommandNotFound
-
-
 
 intents = discord.Intents.default()
 intents.message_content = True  # Necessário para ler mensagens
@@ -71,6 +67,8 @@ async def on_ready():
     # Inicia tarefas de background
     current_time.start()
 
+# ------------------------------------------ ERROR HANDLER ------------------------------------------ #
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, MissingRequiredArgument):
@@ -80,10 +78,10 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
-# ------------------------------------------ BOT COMANDS ------------------------------------------ #
+# ------------------------------------------ BOT COMMANDS ------------------------------------------ #
 
 # Help
-@tree.command(name="help", description="Mostra to       dos os comandos disponíveis")
+@tree.command(name="help", description="Mostra todos os comandos disponíveis")
 async def help_slash(interaction: discord.Interaction):
     try:
         await interaction.response.defer()  # Defere a resposta, indicando que o bot está processando o comando
@@ -97,7 +95,6 @@ async def help_slash(interaction: discord.Interaction):
         await interaction.followup.send(embed=embed)
     except Exception as e:
         await interaction.followup.send(f"⚠️ Ocorreu um erro ao tentar listar os comandos: {e}")
-
 
 # QAP
 @tree.command(name="qap", description="Testa se o bot está online (Ping)")
@@ -171,19 +168,17 @@ class Steam(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(Steam(bot))
 
+
 # Comando Slash para exibir os jogos mais jogados (slash)
-@bot.tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
+@tree.command(name="timeplayed", description="Exibe os principais jogos da sua biblioteca por tempo jogado")
 async def timeplayed_slash(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
         steam_data = load_steam_data()
 
-        # Recuperar Steam ID do usuário
-        steam_id = None
-        for key, value in steam_data.items():
-            if value == str(interaction.user.id):
-                steam_id = key
-                break
+        # Recuperar Steam ID do usuário (corrigido para buscar steam_id pelo user_id)
+        user_id = str(interaction.user.id)
+        steam_id = steam_data.get(user_id)
 
         if not steam_id:
             await interaction.followup.send("Você não vinculou seu Steam ID ainda. Use o comando `/linksteam`.")
@@ -253,61 +248,32 @@ async def restart(interaction: discord.Interaction):
     else:
         await interaction.response.send_message("Você não tem permissão para reiniciar o bot.") 
 
-
 frases_motivacionais = [
     ("A persistência é o caminho do êxito.", "Charles Chaplin"),
     ("Só se pode alcançar um grande êxito quando nos mantemos fiéis a nós mesmos.", "Friedrich Nietzsche"),
-    ("Tente mover o mundo – o primeiro passo será mover a si mesmo.", "Platão"),
-    ("A vantagem de ter péssima memória é divertir-se muitas vezes com as mesmas coisas boas como se fosse a primeira vez.", "Friedrich Nietzsche"),
-    ("O sucesso nasce do querer, da determinação e persistência em se chegar a um objetivo.", "José de Alencar"),
-    ("A confiança é uma mulher ingrata, Que te beija e te abraça, te rouba e te mata.", "Racionais MC's"),
-    ("De todos os animais selvagens, o homem jovem é o mais difícil de domar.", "Platão"),
-    ("Deve-se temer a velhice, porque ela nunca vem só. Bengalas são provas de idade e não de prudência.", "Platão"),
-    ("É mais fácil lidar com uma má consciência do que com uma má reputação.", "Friedrich Nietzsche"),
-    ("O que me preocupa não é o grito dos maus. É o silêncio dos bons.", "Martin Luther King Jr."),
+    ("Tente e falhe, mas nunca falhe em tentar.", "Jared Kushner"),
     ("Não espere por uma crise para descobrir o que é importante em sua vida.", "Platão"),
-    ("A coragem é a primeira das qualidades humanas porque garante todas as outras.", "Aristóteles"),
-    ("A maior glória em viver não está em nunca cair, mas em nos levantar cada vez que caímos.", "Nelson Mandela"),
-    ("Quem olha para fora, sonha; quem olha para dentro, desperta.", "Carl Jung"),
-    ("A mente que se abre a uma nova ideia jamais voltará ao seu tamanho original.", "Albert Einstein"),
-    ("Nada é pequeno quando feito com amor.", "Cícero"),
-    ("A felicidade não está em fazer o que se quer, mas em querer o que se faz.", "Jean-Paul Sartre"),
-    ("Se queres ser feliz amanhã, tenta hoje mesmo.", "Liang Tzu"),
-    ("É durante os momentos mais sombrios que devemos focar para ver a luz.", "Aristóteles"),
-    ("A vida é 10% o que acontece com você e 90% como você reage a isso.", "Charles Swindoll")
+    ("Você não é derrotado quando perde, você é derrotado quando desiste.", "Paulo Coelho"),
+    ("O sucesso é ir de fracasso em fracasso sem perder o entusiasmo.", "Winston Churchill"),
 ]
 
-emojis = [
-    ("😁"),
-    ("✌️"),
-    ("🥶"),
-    ("⛅"),
-    ("🌹"),
-    ("☀️"),
-    ("💰"),
-    ("🍎"),
-    ("🖖"),
-    ("🔥"),
-    ("🎯"),
-    ("🎉"),
-    ("🤖"),
-    ("🧠"),
-    ("🚀"),
-    ("🐍"),
-    ("🛡️"),
-    ("📚")
-]
-
-@tasks.loop(hours=24)
-async def current_time():
-    channel = bot.get_channel(1367650512492695572)
-
+@tree.command(name="motivacao", description="Envia uma frase motivacional")
+async def motivacao_slash(interaction: discord.Interaction):
     frase, autor = random.choice(frases_motivacionais)
-    emoji = random.choice(emojis)
-    mensagem = f"{emoji} *\"{frase}\"* — **{autor}**"
+    await interaction.response.send_message(f'"{frase}"\n- {autor}')
 
-    if channel:
-        await channel.send(mensagem)
+@tasks.loop(minutes=1)
+async def current_time():
+    canal = bot.get_channel(1367650512492695572)
+    if canal:
+        await canal.send(f"⏰ Horário atual: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-TOKEN = config("TOKEN")
-bot.run(TOKEN)
+# ------------------------------------------ INÍCIO ------------------------------------------ #
+
+async def main():
+    async with bot:
+        # Carregar Cogs
+        await setup(bot)
+        await bot.start(config("DISCORD_TOKEN"))
+
+asyncio.run(main())
